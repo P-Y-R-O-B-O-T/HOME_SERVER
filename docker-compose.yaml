@@ -51,6 +51,55 @@ services:
       - "/:/host:ro,rslave"
       - "/sys/class/power_supply/BAT0/current_now:/sys/class/power_supply/BAT0/current_now:ro,rslave"
 
+  db:
+    image: mariadb:10.6
+    restart: no
+    container_name: db
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=1qaz2wsx3edc4rfv
+      - MYSQL_PASSWORD=1qaz2wsx3edc4rfv
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    networks:
+      - home_server
+
+  nextcloud:
+    image: nextcloud
+    container_name: nextcloud
+    ports:
+      - 8081:80
+    links:
+      - db
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_PASSWORD=1qaz2wsx3edc4rfv
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
+    networks:
+      - home_server
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    restart: no
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - jellyfin_config:/config
+      - /home/kushl/moovies:/data/movies
+    ports:
+      - 8096:8096
+    networks:
+      - home_server
+
+
 networks:
   home_server:
   host:
@@ -59,4 +108,12 @@ volumes:
   prometheus_data:
     driver: local
   grafana_data:
+    driver: local
+  jellyfin_config:
+    driver: local
+  jellyfin_cache:
+    driver: local
+  nextcloud:
+    driver: local
+  db:
     driver: local

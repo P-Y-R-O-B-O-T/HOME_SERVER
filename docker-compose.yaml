@@ -1,0 +1,62 @@
+services:
+  prometheus:
+    image: docker.io/prom/prometheus:v2.51.2
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    command: "--config.file=/etc/prometheus/prometheus.yaml"
+    volumes:
+      - ./CONFIG/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus_data:/prometheus
+    restart: no
+    networks:
+      - home_server
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+        - home_server
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    networks:
+      - home_server
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - "--path.rootfs=/host"
+    networks:
+      - home_server
+      - host
+    pid: host
+    volumes:
+      - "/:/host:ro,rslave"
+      - "/sys/class/power_supply/BAT0/current_now:/sys/class/power_supply/BAT0/current_now:ro,rslave"
+
+networks:
+  home_server:
+  host:
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

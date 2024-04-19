@@ -99,6 +99,32 @@ services:
     networks:
       - home_server
 
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - 56:53/tcp
+      - 54:53/udp
+      - 81:80
+    environment:
+      TZ: 'Asia/Kolkata'
+      WEBPASSWORD: 1qaz2wsx3edc4rfv
+    volumes:
+      - './etc-pihole:/etc/pihole'
+      - './etc-dnsmasq.d:/etc/dnsmasq.d'
+    restart: no
+    networks:
+      - home_server
+
+  dashy:
+    image: lissy93/dashy:latest
+    container_name: dashy
+    ports:
+      - 4000:80
+    environment: 
+      - NODE_ENV=production
+    networks:
+      - home_server
 
 networks:
   home_server:

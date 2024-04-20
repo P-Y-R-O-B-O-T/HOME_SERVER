@@ -8,7 +8,7 @@ services:
     volumes:
       - ./CONFIG/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus_data:/prometheus
-    restart: no
+    restart: unless-stopped
     networks:
       - home_server
 
@@ -19,6 +19,7 @@ services:
       - 3000:3000
     volumes:
       - grafana_data:/var/lib/grafana
+    restart: unless-stopped
     networks:
         - home_server
 
@@ -35,6 +36,7 @@ services:
       - /dev/disk:/dev/disk:ro
     devices:
       - /dev/kmsg
+    restart: unless-stopped
     networks:
       - home_server
 
@@ -43,18 +45,18 @@ services:
     container_name: node_exporter
     command:
       - "--path.rootfs=/host"
-    networks:
-      - home_server
-      - host
     pid: host
     volumes:
       - "/:/host:ro,rslave"
       - "/sys/class/power_supply/BAT0/current_now:/sys/class/power_supply/BAT0/current_now:ro,rslave"
+    restart: unless-stopped
+    networks :
+      - home_server
+      - host
 
   jellyfin:
     image: jellyfin/jellyfin
     container_name: jellyfin
-    restart: no
     environment:
       - PUID=1000
       - PGID=1000
@@ -64,6 +66,7 @@ services:
       - "../storage/movies:/data/movies"
     ports:
       - 8096:8096
+    restart: unless-stopped
     networks:
       - home_server
 
@@ -80,7 +83,7 @@ services:
     volumes:
       - './CONFIG/etc-pihole:/etc/pihole'
       - './CONFIG/etc-dnsmasq.d:/etc/dnsmasq.d'
-    restart: no
+    restart: unless-stopped
     networks:
       - home_server
 
@@ -93,6 +96,7 @@ services:
     volumes:
       - "../storage:/srv"
       - "../filebrowser.db:/database.db"
+    restart: unless-stopped
     networks:
       - home_server
 

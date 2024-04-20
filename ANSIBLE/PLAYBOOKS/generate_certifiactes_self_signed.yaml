@@ -1,0 +1,80 @@
+- name: generate_keys_nginx_main
+  hosts: all
+  tasks:
+    - name: remove_existing_certificates
+      become: true
+      become_user: root
+      ansible.builtin.file:
+        name: /certificates
+        state: absent
+
+    - name: create_directory
+      become: true
+      become_user: root
+      ansible.builtin.file:
+        name: /certificates
+        state: directory
+
+    - name: create_private_key
+      become: true
+      become_user: root
+      community.crypto.openssl_privatekey:
+        path: /certificates/server.key
+        passphrase: 1qaz2wsx3edc4rfv
+        cipher: auto
+
+    - name: see_status_of_keys
+      become: true
+      become_user: root
+      ansible.builtin.shell: ls
+      args:
+        chdir: /certificates
+      register: output_ls
+
+    - debug:
+        var: output_ls.stdout
+
+    - name: generate_an_openssl_certificate_signing_request
+      become: true
+      become_user: root
+      community.crypto.openssl_csr:
+        path: /certificates/server.csr
+        privatekey_passphrase: 1qaz2wsx3edc4rfv
+        privatekey_path: /certificates/server.key
+
+    - name: see_status_of_keys
+      become: true
+      become_user: root
+      ansible.builtin.shell: ls
+      args:
+        chdir: /certificates
+      register: output_ls
+
+    - debug:
+        var: output_ls.stdout
+
+    - name: obtain_self_signed_certificate_using_key_and_csr
+      become: true
+      become_user: root
+      openssl_certificate:
+        provider: selfsigned
+        path: /certificates/server.crt
+        privatekey_path: /certificates/server.key
+        csr_path: /certificates/server.csr
+        privatekey_passphrase: 1qaz2wsx3edc4rfv
+
+    - name: see_status_of_keys
+      become: true
+      become_user: root
+      ansible.builtin.shell: ls
+      args:
+        chdir: /certificates
+      register: output_ls
+
+    - debug:
+        var: output_ls.stdout
+
+# this generation is for normal ssl protection
+# for good ssl protection, one must use lets encrypt using certbot
+# see digital ocean resources for more al nginx ssl termination and generation of certificates using ansible
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-load-balancing-with-ssl-termination

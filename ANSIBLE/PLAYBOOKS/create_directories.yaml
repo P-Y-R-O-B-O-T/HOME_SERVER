@@ -1,0 +1,15 @@
+- name: create_required_structures
+  hosts: all
+  tasks:
+    - name: create_file_browser_dir
+      ansible.builtin.file:
+        path: "/storage"
+        state: directory
+
+    - name: create_movies_dir_for_jellyfin
+      ansible.builtin.file:
+        path: "/storage/movies"
+        state: directory
+
+    - name: create_filebrowser.db
+

@@ -1,0 +1,62 @@
+- name: install_docker_dependencieshosts
+  hosts: all
+  tasks:
+    - name: install_aptitude
+      become: true
+      become_user: root
+      apt:
+        name: aptitude
+        state: present
+        update_cache: true
+
+    - name: install_required_packages
+      become: true
+      become_user: root
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: present
+        update_cache: true
+
+    - name: add_docker_gpg_apt_keys
+      become: true
+      become_user: root
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: add_docker_repo
+      become: true
+      become_user: root
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: update_apt_and_install_docker_ce
+      become: true
+      become_user: root
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: install_docker_module_for_python
+      become: true
+      become_user: root
+      pip:
+        name: docker
+
+    - name: install_docker_compose
+      become: true
+      become_user: root
+      apt:
+        name: docker-compose
+        state: present
+        cache_valid_time: 86400

@@ -51,40 +51,8 @@ services:
       - "/:/host:ro,rslave"
       - "/sys/class/power_supply/BAT0/current_now:/sys/class/power_supply/BAT0/current_now:ro,rslave"
 
-  db:
-    image: mariadb:10.6
-    restart: no
-    container_name: db
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
-    volumes:
-      - db:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=1qaz2wsx3edc4rfv
-      - MYSQL_PASSWORD=1qaz2wsx3edc4rfv
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-    networks:
-      - home_server
-
-  nextcloud:
-    image: nextcloud
-    container_name: nextcloud
-    ports:
-      - 8081:80
-    links:
-      - db
-    volumes:
-      - nextcloud:/var/www/html
-    environment:
-      - MYSQL_PASSWORD=1qaz2wsx3edc4rfv
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_HOST=db
-    networks:
-      - home_server
-
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
+    image: jellyfin/jellyfin
     container_name: jellyfin
     restart: no
     environment:
@@ -92,8 +60,8 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - jellyfin_config:/config
-      - /home/kushl/moovies:/data/movies
+      - "jellyfin_config:/config"
+      - "/home/kushl/storage/movies:/data/movies"
     ports:
       - 8096:8096
     networks:
@@ -110,19 +78,45 @@ services:
       TZ: 'Asia/Kolkata'
       WEBPASSWORD: 1qaz2wsx3edc4rfv
     volumes:
-      - './etc-pihole:/etc/pihole'
-      - './etc-dnsmasq.d:/etc/dnsmasq.d'
+      - './CONFIG/etc-pihole:/etc/pihole'
+      - './CONFIG/etc-dnsmasq.d:/etc/dnsmasq.d'
     restart: no
     networks:
       - home_server
 
-  dashy:
-    image: lissy93/dashy:latest
-    container_name: dashy
+  filebrowser:
+    image: filebrowser/filebrowser
+    container_name: filebrowser
+    user: 1000:1000
     ports:
-      - 4000:80
-    environment: 
-      - NODE_ENV=production
+      - 24424:80
+    volumes:
+      - /home/kushl/storage:/srv
+      - "/home/kushl/filebrowser.db:/database.db"
+    networks:
+      - home_server
+
+  nginx:
+    image: nginx:1.25.5
+    container_name: nginx
+    volumes:
+      - "./CONFIG/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "/certificates/server.crt:/server.crt:ro"
+      - "/certificates/server.key:/server.key:ro"
+      - "./CONFIG/passkey.txt:/cert_passkey.txt:ro"
+    ports:
+      - 11111:11111
+      - 11112:11112
+      - 11113:11113
+      - 11114:11114
+    environment:
+      - NGINX_HOST=homelab
+    depends_on:
+      - grafana
+      - jellyfin
+      - pihole
+      - filebrowser
+    restart: unless-stopped
     networks:
       - home_server
 
@@ -138,8 +132,4 @@ volumes:
   jellyfin_config:
     driver: local
   jellyfin_cache:
-    driver: local
-  nextcloud:
-    driver: local
-  db:
     driver: local

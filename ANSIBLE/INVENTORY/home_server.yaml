@@ -1,0 +1,4 @@
+home_server_all:
+  hosts:
+    remote_main:
+      ansible_host: 127.0.0.1

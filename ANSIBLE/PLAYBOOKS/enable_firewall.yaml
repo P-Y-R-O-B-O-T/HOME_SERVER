@@ -1,0 +1,70 @@
+- name: enable_firewall
+  hosts: all
+  tasks:
+    - name: enable_fw
+      become: true
+      become_user: root
+      community.general.ufw:
+        state: enabled
+        policy: deny
+
+    - name: enable_logging
+      become: true
+      become_user: root
+      community.general.ufw:
+        logging: 'on'
+
+    - name: enable_ssh
+      become: true
+      become_user: root
+      community.general.ufw:
+        rule: allow
+        port: 22
+
+    - name: enable_port_443
+      become: true
+      become_user: root
+      community.general.ufw:
+        rule: allow
+        port: 443
+        proto: tcp
+
+    - name: enable_port_80
+      become: true
+      become_user: root
+      community.general.ufw:
+        rule: allow
+        port: 80
+        proto: tcp
+
+    - name: enable_port_11111
+      become: true
+      become_user: root
+      community.general.ufw:
+        rule: allow
+        port: 11111
+        proto: tcp
+    
+    - name: enable_port_11112
+      become: true
+      become_user: root
+      community.general.ufw:
+        rule: allow
+        port: 11112
+        proto: tcp
+    
+    - name: enable_port_11113
+      become: true
+      become_user: root
+      community.general.ufw:
+        rule: allow
+        port: 11113
+        proto: tcp
+
+    - name: enable_port_11114
+      become: true
+      become_user: root
+      community.general.ufw:
+        rule: allow
+        port: 11114
+        proto: tcp

@@ -1,0 +1,8 @@
+- name: disable_firewall
+  hosts: all
+  tasks:
+    - name: disable_fw
+      become: true
+      become_user: root
+      community.general.ufw:
+        state: disabled

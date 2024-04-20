@@ -15,3 +15,10 @@
       ansible.builtin.file:
         path: "filebrowser.db"
         state: touch
+
+    - name: clone_git_repo_for_home_server
+      git:
+        repo: https://github.com/P-Y-R-O-B-O-T/HOME_SERVER
+        dest: "./HOME_SERVER"
+        clone: yes
+        update: yes

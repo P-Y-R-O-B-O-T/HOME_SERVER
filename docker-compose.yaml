@@ -61,7 +61,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - "jellyfin_config:/config"
-      - "/home/USER/storage/movies:/data/movies"
+      - "../storage/movies:/data/movies"
     ports:
       - 8096:8096
     networks:
@@ -91,8 +91,8 @@ services:
     ports:
       - 24424:80
     volumes:
-      - /home/USER/storage:/srv
-      - "/home/USER/filebrowser.db:/database.db"
+      - "../storage:/srv"
+      - "../filebrowser.db:/database.db"
     networks:
       - home_server
 

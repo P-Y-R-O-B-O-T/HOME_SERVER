@@ -21,22 +21,6 @@
         rule: allow
         port: 22
 
-    - name: enable_port_443
-      become: true
-      become_user: root
-      community.general.ufw:
-        rule: allow
-        port: 443
-        proto: tcp
-
-    - name: enable_port_80
-      become: true
-      become_user: root
-      community.general.ufw:
-        rule: allow
-        port: 80
-        proto: tcp
-
     - name: enable_port_11111
       become: true
       become_user: root

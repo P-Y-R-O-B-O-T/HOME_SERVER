@@ -64,6 +64,7 @@ services:
     volumes:
       - "jellyfin_config:/config"
       - "../storage/movies:/data/movies"
+      - "../storage/tv_shows:/data/tvshows"
     ports:
       - 8096:8096
     restart: unless-stopped

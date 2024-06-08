@@ -3,27 +3,27 @@
   tasks:
     - name: create_file_browser_dir
       ansible.builtin.file:
-        path: "/home/{{ lookup('env', 'USER') }}/storage"
+        path: "/home/{{ ansible_user }}/storage"
         state: directory
 
     - name: create_movies_dir_for_jellyfin
       ansible.builtin.file:
-        path: "/home/{{ lookup('env', 'USER') }}/storage/movies"
+        path: "/home/{{ ansible_user }}/storage/movies"
         state: directory
 
     - name: create_tv_shows_dir_for_jellyfin
       ansible.builtin.file:
-        path: "/home/{{ lookup('env', 'USER') }}/storage/tv_series"
+        path: "/home/{{ ansible_user }}/storage/tv_series"
         state: directory
 
     - name: create_filebrowser.db
       ansible.builtin.file:
-        path: "/home/{{ lookup('env', 'USER') }}/filebrowser.db"
+        path: "/home/{{ ansible_user }}/filebrowser.db"
         state: touch
 
     - name: clone_git_repo_for_home_server
       git:
         repo: https://github.com/P-Y-R-O-B-O-T/HOME_SERVER
-        dest: "/home/{{ lookup('env', 'USER') }}/HOME_SERVER"
+        dest: "/home/{{ ansible_user }}/HOME_SERVER"
         clone: yes
         update: yes

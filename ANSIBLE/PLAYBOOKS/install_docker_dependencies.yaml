@@ -51,8 +51,10 @@
     - name: install_docker_module_for_python
       become: true
       become_user: root
-      pip:
-        name: docker
+      apt:
+        name: python3-docker
+        state: present
+        update_cache: true
 
     - name: install_docker_compose
       become: true

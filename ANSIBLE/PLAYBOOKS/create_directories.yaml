@@ -11,9 +11,14 @@
         path: "/home/{{ ansible_user }}/storage/movies"
         state: directory
 
-    - name: create_tv_shows_dir_for_jellyfin
+    - name: create_tv_series_dir_for_jellyfin
       ansible.builtin.file:
         path: "/home/{{ ansible_user }}/storage/tv_series"
+        state: directory
+
+    - name: create_tv_shows_dir_for_jellyfin
+      ansible.builtin.file:
+        path: "/home/{{ ansible_user }}/storage/tv_shows"
         state: directory
 
     - name: create_filebrowser.db
